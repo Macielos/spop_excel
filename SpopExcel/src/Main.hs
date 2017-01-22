@@ -1,6 +1,7 @@
 module Main where
 
 import Sheet
+import FileOperations
 import System.IO
 import Data.Sequence as DS
 
@@ -27,7 +28,7 @@ process parts sheet =
         --TODO newSheet, rename, save, open
 
 printHelp :: String
-printHelp = "[tu bedzie help]"
+printHelp = "[tu bedzie help]\ndruga linia\ntrzecia linia"
 
 split :: Eq a => a -> [a] -> [[a]]
 split d [] = []

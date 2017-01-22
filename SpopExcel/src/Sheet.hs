@@ -35,6 +35,7 @@ data Cell =
     NumberCell {value :: Float} |
     SumCell {range :: Range} |
     ProductCell {range :: Range} |
+    BadCommand String |
     MeanCell {range :: Range}
     deriving (Show, Eq)
 
