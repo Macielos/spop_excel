@@ -36,4 +36,4 @@ encode :: [[String]] -> String
 encode mat =
         let
                 encodeLine arr = intercalate colSeparator arr
-in intercalate rowSeparator $ map encodeLine $ mat
+        in intercalate rowSeparator $ map encodeLine $ mat
