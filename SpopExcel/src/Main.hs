@@ -20,6 +20,7 @@ process parts sheet =
         "help" -> Left $ return printHelp
         "print" -> Right $ (printSheet sheet)
         "clear" -> Right $ return (clear sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int))
+        "get" -> Right $ (printCellDetails sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int))
         "set" -> Right $ return (set sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (parts !! 3))
         "setFunc" -> Right $ return (setFunc sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (parts !! 3) (read (parts !! 4) :: Int) (read (parts !! 5) :: Int) (read (parts !! 6) :: Int) (read (parts !! 7) :: Int))
         otherwise -> Left $ return "incorrect command, type 'help' for available commands"
