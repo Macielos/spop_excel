@@ -17,22 +17,19 @@ process parts sheet =
         "quit" -> Left $ return "quit"
         "help" -> Left $ return printHelp
         "print" -> Right $ (printSheet sheet)
-        "clear" -> do
-                     if ((isInt (parts !! 1)) && (isInt (parts !! 2)) == True)
-                     then Right $ return (clear sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int))
-                     else Left $ return "Error - input Integer only"
-        "get" ->  do
-                    if ((isInt (parts !! 1)) && (isInt (parts !! 2)) == True)
-                    then Right $ (printCellDetails sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int))
-                    else Left $ return "Error - input Integer only"
-        "set" -> do
-                   if ((isInt (parts !! 1)) && (isInt (parts !! 2)) == True)
-                   then Right $ return (set sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (parts !! 3))
+        "clear" -> if ((isInt (parts !! 1)) && (isInt (parts !! 2)) == True)
+                   then Right $ return (clear sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int))
                    else Left $ return "Error - input Integer only"
+        "get" -> if ((isInt (parts !! 1)) && (isInt (parts !! 2)) == True)
+                 then Right $ (printCellDetails sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int))
+                 else Left $ return "Error - input Integer only"
+        "set" -> if ((isInt (parts !! 1)) && (isInt (parts !! 2)) == True)
+                 then Right $ return (set sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (parts !! 3))
+                 else Left $ return "Error - input Integer only"
         "setFunc" -> do
-                       if ((isInt (parts !! 1)) && (isInt (parts !! 2)) && (isInt (parts !! 4)&& (isInt (parts !! 5)&& (isInt (parts !! 6)&& (isInt (parts !! 7))== True)
-                       then Right $ return (setFunc sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (parts !! 3) (read (parts !! 4) :: Int) (read (parts !! 5) :: Int) (read (parts !! 6) :: Int) (read (parts !! 7) :: Int))
-                       else Left $ return "Error - input Integer only"
+                     if ((isInt (parts !! 1)) && (isInt (parts !! 2)) && (isInt (parts !! 4))&& (isInt (parts !! 5))&& (isInt (parts !! 6))&& (isInt (parts !! 7))== True)
+                     then Right $ return (setFunc sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (parts !! 3) (read (parts !! 4) :: Int) (read (parts !! 5) :: Int) (read (parts !! 6) :: Int) (read (parts !! 7) :: Int))
+                     else Left $ return "Error - input Integer only"
         otherwise -> Left $ return "incorrect command, type 'help' for available commands"
         --TODO newSheet, rename, save, open
 
