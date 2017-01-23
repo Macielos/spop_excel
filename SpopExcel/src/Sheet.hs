@@ -124,10 +124,10 @@ newCell value =
               _         -> TextCell value
 
 --newCell :: String -> Either Bool Cell
---newCell [] = Right $ return Empty
---newCell x:xs  = if ((isNumber x) && (newCell xs) && newCell(last xs))
---                then  Left $ return True and Right $ return NumberCell (read x:xs :: Float)
---                else Right $ return TextCell value
+--newCell []   | (isNumber(last xs)) == True  = Right $ return NumberCell (read x:xs :: Float)
+--             | otherwise Right $ return Empty
+--newCell x:xs | (isNumber x) && (newCell xs) = Left $ return True
+--             | otherwise Right $ return TextCell x:xs
 
 newFuncCell :: String -> Int -> Int -> Int -> Int -> Cell
 newFuncCell function x1 y1 x2 y2 = newFuncCellRange function (Range x1 y1 x2 y2)
