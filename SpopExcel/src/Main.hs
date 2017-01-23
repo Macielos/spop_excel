@@ -10,20 +10,23 @@ import Prelude
 
 process :: [String] -> Sheet -> Either (IO String) (IO Sheet)
 process parts sheet =
-    if (Prelude.length parts < 1)
+    if (Prelude.length parts < 0)
     then Left $ return ""
 
     else case (parts !! 0) of
         "quit" -> Left $ return "quit"
         "help" -> Left $ return printHelp
         "print" -> Right $ (printSheet sheet)
-        "clear" -> if ((isInt (parts !! 1)) && (isInt (parts !! 2)) == True)
+        "clear" -> do
+                   if ((isInt (parts !! 1)) && (isInt (parts !! 2)) == True)
                    then Right $ return (clear sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int))
                    else Left $ return "Error - input Integer only"
-        "get" -> if ((isInt (parts !! 1)) && (isInt (parts !! 2)) == True)
+        "get" -> do
+                 if ((isInt (parts !! 1)) && (isInt (parts !! 2)) == True)
                  then Right $ (printCellDetails sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int))
                  else Left $ return "Error - input Integer only"
-        "set" -> if ((isInt (parts !! 1)) && (isInt (parts !! 2)) == True)
+        "set" -> do
+                 if ((isInt (parts !! 1)) && (isInt (parts !! 2)) && (Prelude.length parts == 4) == True)
                  then Right $ return (set sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (parts !! 3))
                  else Left $ return "Error - input Integer only"
         "setFunc" -> do
