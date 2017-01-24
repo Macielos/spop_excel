@@ -41,8 +41,12 @@ process parts sheet =
                      else if ((isInt (parts !! 1)) && (isInt (parts !! 2)) && (isInt (parts !! 4))&& (isInt (parts !! 5))&& (isInt (parts !! 6))&& (isInt (parts !! 7))== True)
                      then Right $ return (setFunc sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (parts !! 3) (read (parts !! 4) :: Int) (read (parts !! 5) :: Int) (read (parts !! 6) :: Int) (read (parts !! 7) :: Int))
                      else Left $ return "Error - input Integer only"
+        "newSheet" -> do
+                      if (P.length parts < 3)
+                      then Right $ return (newSheet (parts !! 1))
+                      else Left $ return "So long sheetname"
         otherwise -> Left $ return "incorrect command, type 'help' for available commands"
-        --TODO newSheet, rename, save, open
+        --TODO rename, save, open
 
 
 isInt :: String -> Bool
@@ -50,7 +54,7 @@ isInt [] = True
 isInt (x:xs) = (isDigit x) && (isInt xs)
 
 printHelp :: String
-printHelp = "Avalible commands:\n 1.set - arguments X Y value\n 2.get - arguments X Y\n 3.clear - arguments X Y\n 4.print - display current sheet\n 5.setFunc - ???????????\n 6.help\n 7.quit"
+printHelp = "Avalible commands:\n 1.set - arguments X Y value\n 2.get - arguments X Y\n 3.clear - arguments X Y\n 4.print - display current sheet\n 5.setFunc - X Y 'sum' || 'product' || 'mean' X1 Y1 X2 Y2\n 6.newSheet - argument NAME\n 7.help\n 8.quit"
 
 split :: Eq a => a -> [a] -> [[a]]
 split d [] = []

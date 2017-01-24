@@ -112,8 +112,6 @@ setCellInternal :: Cells -> Int -> Int -> Cell -> Cells
 setCellInternal cells x y value = DS.update y (DS.update x value (index cells y)) cells
 
 
-
-
 {-TODO pewnie mozna to lepiej zrobic-}
 newCell :: String -> Cell
 newCell value =
@@ -144,10 +142,7 @@ newSheet name = Sheet name 1 1 (DS.singleton(newRow 1))
 
 newRow :: Int -> Seq Cell
 newRow length = DS.fromList(map toEmpty [x | x <-[0..(length-1)]])
-
 toEmpty a = Empty
-
-
 
 expandSheetIfNecessary :: Cells -> Int -> Int -> Cells
 expandSheetIfNecessary cells x y = addRowsIfNecessary (addColumnsIfNecessary cells x) y
@@ -169,8 +164,6 @@ expandRow cells rowNr elementsToAdd =
     if (rowNr < DS.length cells)
     then expandRow (DS.update rowNr ((index cells rowNr) >< newRow elementsToAdd) cells) (rowNr+1) elementsToAdd
     else cells
-
-
 
 
 getCells :: Sheet -> Seq (Seq Cell)
