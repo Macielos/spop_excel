@@ -1,1 +1,1 @@
-# spop_excel
+# Arkusz kalkulacyjny
