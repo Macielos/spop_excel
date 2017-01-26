@@ -15,7 +15,6 @@ rowSeparator = "\n"
 loadSheet :: FilePath -> IO [[String]]
 loadSheet name = do
         content <- readFile (dataDir ++ name)
-        -- File content is saved to temporary file to force reading file (due to leazy evaluation) and closing its handle
         writeFile tmpFile content
         removeFile tmpFile
         return (decode content)

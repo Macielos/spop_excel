@@ -140,6 +140,9 @@ newFuncCellRange function range = case function of
 newSheet :: String -> Sheet
 newSheet name = Sheet name 1 1 (DS.singleton(newRow 1))
 
+renameSheet :: Sheet -> String -> Sheet
+renameSheet (Sheet name w h cells) newName = Sheet newName w h cells
+
 newRow :: Int -> Seq Cell
 newRow length = DS.fromList(map toEmpty [x | x <-[0..(length-1)]])
 toEmpty a = Empty

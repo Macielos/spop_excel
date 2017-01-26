@@ -19,34 +19,37 @@ process parts sheet =
         "print" -> Right $ (printSheet sheet)
         "clear" -> do
                    if (P.length parts < 3)
-                   then Left $ return "A few arguments for function 'clear'"
+                   then Left $ return "Too few arguments for function 'clear'"
                    else if ((isInt (parts !! 1)) && (isInt (parts !! 2)) == True)
                    then Right $ return (clear sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int))
                    else Left $ return "Error - input Integer only"
         "get" -> do
                  if (P.length parts < 3)
-                 then Left $ return "A few arguments for function 'get'"
+                 then Left $ return "Too few arguments for function 'get'"
                  else if ((isInt (parts !! 1)) && (isInt (parts !! 2)) == True)
                  then Right $ (printCellDetails sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int))
                  else Left $ return "Error - input Integer only"
         "set" -> do
                  if (P.length parts < 4)
-                 then Left $ return "A few arguments for function 'set'"
+                 then Left $ return "Too few arguments for function 'set'"
                  else if ((isInt (parts !! 1)) && (isInt (parts !! 2)) == True)
                  then Right $ return (set sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (parts !! 3))
                  else Left $ return "Error - input Integer only"
         "setFunc" -> do
                      if (P.length parts < 8)
-                     then Left $ return "A few arguments for function 'setFunc'"
+                     then Left $ return "Too few arguments for function 'setFunc'"
                      else if ((isInt (parts !! 1)) && (isInt (parts !! 2)) && (isInt (parts !! 4))&& (isInt (parts !! 5))&& (isInt (parts !! 6))&& (isInt (parts !! 7))== True)
                      then Right $ return (setFunc sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (parts !! 3) (read (parts !! 4) :: Int) (read (parts !! 5) :: Int) (read (parts !! 6) :: Int) (read (parts !! 7) :: Int))
                      else Left $ return "Error - input Integer only"
-        "newSheet" -> do
+        "new" -> do
                       if (P.length parts < 3)
                       then Right $ return (newSheet (parts !! 1))
-                      else Left $ return "So long sheetname"
+                      else Left $ return "Too few arguments for function 'new'"
+        "rename" -> do
+                  if (P.length parts < 3)
+                  then Right $ return (nenameSheet (parts !! 1))
+                  else Left $ return "Too few arguments for function 'new'"
         otherwise -> Left $ return "incorrect command, type 'help' for available commands"
-        --TODO rename, save, open
 
 
 isInt :: String -> Bool
