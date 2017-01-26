@@ -74,9 +74,7 @@ calcProductInternal x1 x2 sheet row = foldr (*) 1.0 (map (getNumber sheet 1.0) (
 calcMean :: Sheet -> Range -> Float
 calcMean sheet (Range x1 y1 x2 y2) = (calcSum sheet (Range x1 y1 x2 y2)) / fromIntegral((1 + x2 - x1) * (1 + y2 - y1))
 
-{-TODO
-sformatowac to sensownie,
-getCells printowac w formie tabeli,
+{-TODO sformatowac to sensownie, getCells printowac w formie tabeli,
 dla typow sum, product, mean obliczac je przed wyswietleniem, moze niech implementuja jakis typ z funkcja getValue albo cos
 -}
 printSheet :: Sheet -> IO Sheet
@@ -111,6 +109,14 @@ setCell sheet x y value =
 setCellInternal :: Cells -> Int -> Int -> Cell -> Cells
 setCellInternal cells x y value = DS.update y (DS.update x value (index cells y)) cells
 
+------------------------ For file operations ------------------------
+--serialize :: Sheet -> [[String]]
+--serialize sheet =
+--        let
+--        cellLists = toList (getCells sheet)
+--        in
+--        map (\row -> map show row) cellLists
+-----------------------------------------------------------------------
 
 {-TODO pewnie mozna to lepiej zrobic-}
 newCell :: String -> Cell

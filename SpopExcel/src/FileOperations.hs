@@ -6,6 +6,7 @@ module FileOperations (
 import Data.List
 import Data.List.Split
 import System.Directory (removeFile)
+import Sheet
 
 tmpFile = "sheet.tmp"
 dataDir = ""

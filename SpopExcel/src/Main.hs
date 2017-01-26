@@ -54,7 +54,7 @@ isInt [] = True
 isInt (x:xs) = (isDigit x) && (isInt xs)
 
 printHelp :: String
-printHelp = "Avalible commands:\n 1.set - arguments X Y value\n 2.get - arguments X Y\n 3.clear - arguments X Y\n 4.print - display current sheet\n 5.setFunc - X Y 'sum' || 'product' || 'mean' X1 Y1 X2 Y2\n 6.newSheet - argument NAME\n 7.help\n 8.quit"
+printHelp = "Avalible commands:\n 1.set - X Y value\n 2.get - X Y\n 3.clear - X Y\n 4.print - display current sheet\n 5.setFunc - X Y 'sum' || 'product' || 'mean' X1 Y1 X2 Y2\n 6.newSheet - argument NAME\n 7.help\n 8.quit"
 
 split :: Eq a => a -> [a] -> [[a]]
 split d [] = []
