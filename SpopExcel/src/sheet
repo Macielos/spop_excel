@@ -1,0 +1,1 @@
+Sheet {name = "the sheet has no name", width = 2, height = 3, cells = fromList [fromList [NumberCell {value = 3.0},Empty],fromList [Empty,NumberCell {value = 3.4}],fromList [Empty,TextCell {str = "dekdl"}]]}

@@ -1,0 +1,7 @@
+the sheet has no name
+4
+4
+s 0 1 0 2	n 3.0	e	e
+n 2.0	n 4.0	e	e
+e	e	e	e
+s 0 0 0 2	s 1 0 1 2	e	s 0 3 2 3

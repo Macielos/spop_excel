@@ -1,21 +1,25 @@
 module Sheet
-{-
-}(
+(
 newSheet,
 set,
 setFunc,
+checkFunc,
+checkRange,
+checkBoundaries,
 clear,
 printSheet,
-Sheet(..)
-{-
-expandSheetIfNecessary,
-getCells,
-getName,
-getWidth,
-getHeight,
--}
-) -}where
+printCellDetails,
+renameSheet,
+Sheet(..),
+Cell(..),
+Cells(..),
+newCell,
+newFuncCell,
+encodeCell,
+decodeCell
+) where
 
+import Data.List.Split
 import Data.Sequence as DS
 import Data.Foldable as DF
 import Data.List as DL
@@ -46,6 +50,10 @@ data Range = Range {
     y2 :: Int
 } deriving (Show, Eq)
 
+cellSeparator = " "
+maxWidth = 100
+maxHeight = 100
+
 getValue :: Sheet -> Cell -> String
 getValue _ Empty = ""
 getValue _ (TextCell str) = str
@@ -74,9 +82,6 @@ calcProductInternal x1 x2 sheet row = foldr (*) 1.0 (map (getNumber sheet 1.0) (
 calcMean :: Sheet -> Range -> Float
 calcMean sheet (Range x1 y1 x2 y2) = (calcSum sheet (Range x1 y1 x2 y2)) / fromIntegral((1 + x2 - x1) * (1 + y2 - y1))
 
-{-TODO sformatowac to sensownie, getCells printowac w formie tabeli,
-dla typow sum, product, mean obliczac je przed wyswietleniem, moze niech implementuja jakis typ z funkcja getValue albo cos
--}
 printSheet :: Sheet -> IO Sheet
 printSheet sheet = do putStrLn ((getName sheet)++" ["++(show (getWidth sheet))++"x"++(show (getHeight sheet))++"] ")
                       putStr (printCells sheet)
@@ -98,6 +103,42 @@ set sheet x y value = setCell sheet x y (newCell value)
 setFunc :: Sheet -> Int -> Int -> String -> Int -> Int -> Int -> Int -> Sheet
 setFunc sheet x y function x1 y1 x2 y2 = setCell sheet x y (newFuncCell function x1 y1 x2 y2)
 
+checkFunc :: Sheet -> Int -> Int -> Int -> Int -> Int -> Int -> Bool
+checkFunc sheet x y x1 y1 x2 y2 =
+    let expandedSheet = Sheet (getName sheet) (max (x+1) (getWidth sheet)) (max (y+1) (getHeight sheet)) (expandSheetIfNecessary (getCells sheet) x y) in
+    not (inRange x y x1 y1 x2 y2) &&
+    not (hasCycles expandedSheet x y [(a,b) | a <- [x1..x2], b <- [y1..y2]])
+
+checkRange :: Sheet -> Int -> Int -> Int -> Int -> Int -> Int -> Bool
+checkRange sheet x y x1 y1 x2 y2 = x1 <= x2 && y1 <= y2 && x1 >= 0 && y1 >= 0 && x2 < (max (x+1) (getWidth sheet)) && y2 < (max (y+1) (getHeight sheet))
+
+checkBoundaries :: Sheet -> Int -> Int -> Bool
+checkBoundaries sheet x y = x >= 0 && y >= 0 && x < maxWidth && y < maxHeight
+
+inRange :: Int -> Int -> Int -> Int -> Int -> Int -> Bool
+inRange x y x1 y1 x2 y2 = (x >= x1 && x <= x2 && y >= y1 && y <= y2)
+
+hasCycles :: Sheet -> Int -> Int -> [(Int, Int)] -> Bool
+hasCycles sheet x y points = elem True (map (hasCycle sheet x y) points)
+
+hasCycle :: Sheet -> Int -> Int -> (Int, Int) -> Bool
+hasCycle sheet x y (px, py) = cellHasCycle sheet x y (DS.index (DS.index (getCells sheet) py ) px )
+
+cellHasCycle :: Sheet -> Int -> Int -> Cell -> Bool
+cellHasCycle _ _ _ Empty = False
+cellHasCycle _ _ _ (TextCell _) = False
+cellHasCycle _ _ _ (NumberCell _) = False
+cellHasCycle sheet x y (SumCell (Range x1 y1 x2 y2)) = (inRange x y x1 y1 x2 y2) || hasCycles sheet x y [(a,b) | a <- [x1..x2], b <- [y1..y2]]
+cellHasCycle sheet x y (ProductCell (Range x1 y1 x2 y2)) = (inRange x y x1 y1 x2 y2) || (hasCycles sheet x y [(a,b) | a <- [x1..x2], b <- [y1..y2]])
+cellHasCycle sheet x y (MeanCell (Range x1 y1 x2 y2)) = (inRange x y x1 y1 x2 y2) || (hasCycles sheet x y [(a,b) | a <- [x1..x2], b <- [y1..y2]])
+
+
+
+
+
+renameSheet :: Sheet -> String -> Sheet
+renameSheet (Sheet name w h cells) newName = Sheet newName w h cells
+
 clear :: Sheet -> Int -> Int -> Sheet
 clear sheet x y = setCell sheet x y Empty
 
@@ -108,15 +149,6 @@ setCell sheet x y value =
 
 setCellInternal :: Cells -> Int -> Int -> Cell -> Cells
 setCellInternal cells x y value = DS.update y (DS.update x value (index cells y)) cells
-
------------------------- For file operations ------------------------
---serialize :: Sheet -> [[String]]
---serialize sheet =
---        let
---        cellLists = toList (getCells sheet)
---        in
---        map (\row -> map show row) cellLists
------------------------------------------------------------------------
 
 {-TODO pewnie mozna to lepiej zrobic-}
 newCell :: String -> Cell
@@ -141,17 +173,21 @@ newFuncCellRange function range = case function of
     "sum" -> SumCell range
     "product" -> ProductCell range
     "mean" -> MeanCell range
+    "s" -> SumCell range
+    "p" -> ProductCell range
+    "m" -> MeanCell range
     _      -> Empty
 
 newSheet :: String -> Sheet
 newSheet name = Sheet name 1 1 (DS.singleton(newRow 1))
 
-renameSheet :: Sheet -> String -> Sheet
-renameSheet (Sheet name w h cells) newName = Sheet newName w h cells
-
 newRow :: Int -> Seq Cell
 newRow length = DS.fromList(map toEmpty [x | x <-[0..(length-1)]])
 toEmpty a = Empty
+
+
+
+
 
 expandSheetIfNecessary :: Cells -> Int -> Int -> Cells
 expandSheetIfNecessary cells x y = addRowsIfNecessary (addColumnsIfNecessary cells x) y
@@ -175,6 +211,11 @@ expandRow cells rowNr elementsToAdd =
     else cells
 
 
+
+
+
+
+
 getCells :: Sheet -> Seq (Seq Cell)
 getCells (Sheet name width height cells) = cells
 
@@ -186,3 +227,28 @@ getWidth (Sheet name width height cells) = width
 
 getHeight :: Sheet -> Int
 getHeight (Sheet name width height cells) = height
+
+
+
+
+
+encodeCell :: Cell -> String
+encodeCell Empty = "e"
+encodeCell (TextCell str) = "t "++str
+encodeCell (NumberCell n) = "n "++(show n)
+encodeCell (SumCell range) = "s "++(encodeRange range)
+encodeCell (ProductCell range) = "p "++(encodeRange range)
+encodeCell (MeanCell range) = "m "++(encodeRange range)
+
+decodeCell :: String -> Cell
+decodeCell cellStr = let parts = splitOn " " cellStr
+    in case parts !! 0 of
+    "e" -> Empty
+    "t" -> newCell (parts !! 1)
+    "n" -> newCell (parts !! 1)
+    "s" -> newFuncCell (parts !! 0) (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (read (parts !! 3) :: Int) (read (parts !! 4) :: Int)
+    "p" -> newFuncCell (parts !! 0) (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (read (parts !! 3) :: Int) (read (parts !! 4) :: Int)
+    "m" -> newFuncCell (parts !! 0) (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (read (parts !! 3) :: Int) (read (parts !! 4) :: Int)
+
+encodeRange :: Range -> String
+encodeRange (Range x1 y1 x2 y2) = intercalate cellSeparator [(show x1),(show y1),(show x2),(show y2)]

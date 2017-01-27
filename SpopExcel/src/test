@@ -1,0 +1,1 @@
+Sheet {name = "the sheet has no name", width = 3, height = 3, cells = fromList [fromList [NumberCell {value = 2.0},Empty,Empty],fromList [NumberCell {value = 4.0},Empty,Empty],fromList [Empty,Empty,SumCell {range = Range {x1 = 0, y1 = 0, x2 = 1, y2 = 1}}]]}

@@ -20,35 +20,55 @@ process parts sheet =
         "clear" -> do
                    if (P.length parts < 3)
                    then Left $ return "Too few arguments for function 'clear'"
-                   else if ((isInt (parts !! 1)) && (isInt (parts !! 2)) == True)
-                   then Right $ return (clear sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int))
-                   else Left $ return "Error - input Integer only"
+                   else if not ((isInt (parts !! 1)) && (isInt (parts !! 2)))
+                   then Left $ return "Error - input Integer only"
+                   else if not (checkBoundaries sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int))
+                   then Left $ return "Coodintates beyond range"
+                   else Right $ return (clear sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int))
         "get" -> do
                  if (P.length parts < 3)
                  then Left $ return "Too few arguments for function 'get'"
-                 else if ((isInt (parts !! 1)) && (isInt (parts !! 2)) == True)
-                 then Right $ (printCellDetails sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int))
-                 else Left $ return "Error - input Integer only"
+                 else if not ((isInt (parts !! 1)) && (isInt (parts !! 2)))
+                 then Left $ return "Error - input Integer only"
+                 else if not (checkBoundaries sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int))
+                 then Left $ return "Coodintates beyond range"
+                 else Right $ (printCellDetails sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int))
         "set" -> do
                  if (P.length parts < 4)
                  then Left $ return "Too few arguments for function 'set'"
-                 else if ((isInt (parts !! 1)) && (isInt (parts !! 2)) == True)
-                 then Right $ return (set sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (parts !! 3))
-                 else Left $ return "Error - input Integer only"
+                 else if not ((isInt (parts !! 1)) && (isInt (parts !! 2)))
+                 then Left $ return "Error - input Integer only"
+                 else if not (checkBoundaries sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int))
+                 then Left $ return "Coodintates beyond range"
+                 else Right $ return (set sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (parts !! 3))
         "setFunc" -> do
-                     if (P.length parts < 8)
-                     then Left $ return "Too few arguments for function 'setFunc'"
-                     else if ((isInt (parts !! 1)) && (isInt (parts !! 2)) && (isInt (parts !! 4))&& (isInt (parts !! 5))&& (isInt (parts !! 6))&& (isInt (parts !! 7))== True)
-                     then Right $ return (setFunc sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (parts !! 3) (read (parts !! 4) :: Int) (read (parts !! 5) :: Int) (read (parts !! 6) :: Int) (read (parts !! 7) :: Int))
-                     else Left $ return "Error - input Integer only"
+                         if (P.length parts < 8)
+                         then Left $ return "Too few arguments for function 'setFunc'"
+                         else if not ((isInt (parts !! 1)) && (isInt (parts !! 2)) && (isInt (parts !! 4))&& (isInt (parts !! 5))&& (isInt (parts !! 6))&& (isInt (parts !! 7)))
+                         then Left $ return "Error - input Integer only"
+                         else if not (checkBoundaries sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int))
+                         then Left $ return "Coodintates beyond range"
+                         else if not (checkRange sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (read (parts !! 4) :: Int) (read (parts !! 5) :: Int) (read (parts !! 6) :: Int) (read (parts !! 7) :: Int))
+                         then Left $ return "Range invalid or beyond sheet boundaries"
+                         else if not (checkFunc sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (read (parts !! 4) :: Int) (read (parts !! 5) :: Int) (read (parts !! 6) :: Int) (read (parts !! 7) :: Int))
+                         then Left $ return "Cyclic dependency detected"
+                         else Right $ return (setFunc sheet (read (parts !! 1) :: Int) (read (parts !! 2) :: Int) (parts !! 3) (read (parts !! 4) :: Int) (read (parts !! 5) :: Int) (read (parts !! 6) :: Int) (read (parts !! 7) :: Int))
         "new" -> do
-                      if (P.length parts < 3)
+                      if (P.length parts == 2)
                       then Right $ return (newSheet (parts !! 1))
                       else Left $ return "Too few arguments for function 'new'"
         "rename" -> do
-                  if (P.length parts < 3)
-                  then Right $ return (nenameSheet (parts !! 1))
-                  else Left $ return "Too few arguments for function 'new'"
+                  if (P.length parts == 2)
+                  then Right $ return (renameSheet sheet (parts !! 1))
+                  else Left $ return "Too few arguments for function 'rename'"
+        "save" -> do
+                    if (P.length parts == 2)
+                    then Right $ (save sheet (parts !! 1))
+                    else Left $ return "Too few arguments for function 'save'"
+        "load" -> do
+                    if (P.length parts == 2)
+                    then Right $ (load (parts !! 1))
+                    else Left $ return "Too few arguments for function 'load'"
         otherwise -> Left $ return "incorrect command, type 'help' for available commands"
 
 
@@ -57,7 +77,7 @@ isInt [] = True
 isInt (x:xs) = (isDigit x) && (isInt xs)
 
 printHelp :: String
-printHelp = "Avalible commands:\n 1.set - X Y value\n 2.get - X Y\n 3.clear - X Y\n 4.print - display current sheet\n 5.setFunc - X Y 'sum' || 'product' || 'mean' X1 Y1 X2 Y2\n 6.newSheet - argument NAME\n 7.help\n 8.quit"
+printHelp = "Available commands:\n1. set X Y value (number or string) \n2. get X Y\n3. clear X Y\n4. print\n5. setFunc X Y sum | product | mean X1 Y1 X2 Y2 (range boundaries)\n6. new NAME\n7. rename NAME\n8. save FILENAME\n9. load FILENAME\n10. help\n11. quit"
 
 split :: Eq a => a -> [a] -> [[a]]
 split d [] = []
